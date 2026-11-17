@@ -1,80 +1,201 @@
-# GitHub Repository Analysis Agent — Final Enhanced Build
+# 🚀 RepoInsight – GitHub Repository Analysis Agent
 
-A local-first, multi-agent GitHub repository analysis app. The complete core workflow runs **without an LLM API key**. It uses a Python state-graph/agent-loop orchestrator, a task-aware tool registry, bounded retries, report reflection, short-term context, and a Streamlit live demo.
+An AI-inspired, multi-agent GitHub repository analysis system that automatically explores public repositories, analyzes their code quality, identifies potential security issues, and answers questions about repository structure and code.
 
-## Rubric coverage
+## 📌 Project Overview
 
-### 1. Agent Workflow & Planning
-- `PlannerAgent` decomposes repository analysis into ordered steps.
-- `RepositoryAgent` executes the plan through explicit state transitions (`planning → clone → collect → tree → analyse → severity summary → reflection → complete`).
-- The execution trace records each transition and tool result.
+**RepoInsight** is an intelligent GitHub Repository Analysis Agent built using Python and Streamlit.
 
-### 2. Tool Calling & Execution
-- `ToolRegistry` registers tools with descriptions and capability tags.
-- Planner-selected tools are validated against the live registry before execution.
-- Tools execute Python functions for Git cloning, file collection, tree construction, AST/Pyflakes analysis and severity aggregation.
-- Tool calls have a bounded retry policy (one retry by default); invalid input is surfaced immediately.
+It follows a structured agent workflow to understand user requests, create an execution plan, select appropriate tools, analyze repository files, and generate a comprehensive report.
 
-### 3. State Management & Self-Correction
-- Workflow state stores current node, input, plan, context, errors, retry policy and completion status.
-- Streamlit session state retains the agent, report and conversation between interactions.
-- `ReflectionAgent` checks report consistency and completeness and provides recommended actions.
-- Tool failures are captured in the trace and surfaced with fallback guidance. Transient tool errors are retried once. If the first scan returns zero files, reflection triggers one broader collection pass and reruns analysis.
-- Q&A is grounded in the current report and short-term conversation history.
+The application helps developers understand unfamiliar repositories without manually inspecting every file.
 
-### 4. Live Working Demo
-- Streamlit app includes repository analysis, question answering, execution trace, and Tools & History tabs.
-- Suggested live test: `https://github.com/psf/requests` (public repo; internet and Git required).
-- Try questions such as “How many Python functions?”, “How many high severity findings?”, “Which files have unused imports?”, and “Show potential security findings.”
-- Invalid URL test: enter `https://example.com/not-a-github-repository` and show the validation error.
+## ✨ Key Features
 
-## Setup (Windows CMD)
+- **Automated Repository Analysis:** Clone and analyze public GitHub repositories.
+- **Repository Exploration:** Collect repository files and understand project structure.
+- **Programming Language Detection:** Identify programming languages used in the repository.
+- **Code Quality Analysis:** Perform Python AST-based checks and Pyflakes analysis.
+- **Security Analysis:** Detect potential security issues using heuristic checks.
+- **Agent-Based Workflow:** Break tasks into multiple steps using a planner and orchestrator.
+- **Dynamic Tool Selection:** Select and execute tools according to the analysis task.
+- **Error Handling & Retry:** Handle transient failures and retry operations.
+- **Reflection & Validation:** Review analysis results for completeness.
+- **Repository Q&A:** Ask questions about the analyzed repository.
+- **Execution Trace:** View agent activities and tool execution history.
 
-Requirements: Python 3.11+ and Git installed and available on PATH.
+## 🏗️ System Architecture
 
-```cmd
-py -m venv .venv
-.venv\Scripts\activate
-python -m pip install --upgrade pip
-python -m pip install -r requirements.txt
-streamlit run app.py
+The following diagram represents the RepoInsight workflow:
+
+```mermaid
+flowchart TD
+    A[User Input: GitHub URL] --> B[Planner Agent]
+    B --> C[Task Planning]
+    C --> D[StateGraph Orchestrator]
+    D --> E[Tool Selector]
+    E --> F[Tool Executor]
+    F --> G[Repository Collection]
+    G --> H[Code Quality Analysis]
+    G --> I[Security Analysis]
+    G --> J[Language Detection]
+    H --> K[Analysis Results]
+    I --> K
+    J --> K
+    K --> L[Reflection Agent]
+    L --> M{Complete Results?}
+    M -- No --> E
+    M -- Yes --> N[Final Analysis Report]
+    N --> O[Streamlit Dashboard]
+    O --> P[Repository Q&A]
 ```
 
-## Setup (macOS/Linux)
+## 🧠 Agent Workflow
 
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-python -m pip install --upgrade pip
-python -m pip install -r requirements.txt
-streamlit run app.py
-```
+RepoInsight follows a multi-step execution workflow:
 
-## API key
+1. **Planner Agent:** Understands the user's request and breaks it into smaller tasks.
+2. **Tool Selector:** Selects suitable tools for each task.
+3. **Tool Executor:** Executes repository collection and analysis operations.
+4. **Analyzer Modules:** Perform language, quality, and security analysis.
+5. **Reflection Agent:** Checks whether the generated results are sufficiently complete.
+6. **StateGraph Orchestrator:** Manages workflow execution and coordinates the agents.
+7. **Final Output:** Displays the analysis report and supports repository-related questions.
 
-**No LLM API key is required.** Planning, tool selection, code analysis, reflection, retries and report-grounded Q&A are implemented with local Python logic. This makes the demo reproducible without paid API access. An LLM can be added later as an optional enhancement, but it is not needed for the rubric workflow.
+## 🛠️ Technology Stack
 
-## Safety and limitations
-- The app analyses public repositories only; private GitHub repositories are not supported.
-- It clones source code but does not execute code from the target repository.
-- Security checks are heuristic indicators for manual review, not proof of exploitable vulnerabilities.
-- Detailed quality/security checks target Python files; language detection supports several source/config formats.
-- Git and internet access are required for cloning a public repository.
-- Large repositories are capped at 1,200 supported text files and 500 KB per file.
+| Category | Technologies |
+|---|---|
+| Programming Language | Python |
+| Frontend | Streamlit |
+| Code Analysis | Python AST, Pyflakes |
+| Version Control | Git, GitHub |
+| Workflow | Agent-based orchestration, StateGraph-style workflow |
+| Testing | Pytest |
+| Repository Access | Git |
 
-## Project structure
+## 📂 Project Structure
 
 ```text
-GitHub_Repository_Analysis_Agent/
+RepoInsight/
+│
+├── agent/
+│   ├── agents.py
+│   ├── agents_qa.py
+│   ├── analyzers.py
+│   ├── orchestrator.py
+│   ├── quality.py
+│   ├── repository.py
+│   └── tools.py
+│
+├── tests/
+│   └── test_agent_workflow.py
+│
 ├── app.py
 ├── requirements.txt
-├── README.md
-└── agent/
-    ├── agents.py
-    ├── agents_qa.py
-    ├── orchestrator.py
-    ├── tools.py
-    ├── repository.py
-    ├── analyzers.py
-    └── quality.py
+├── .env.example
+├── .gitignore
+└── README.md
 ```
+
+## ⚙️ Installation & Setup
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/ByteVaish/RepoInsight.git
+cd RepoInsight
+```
+
+### 2. Create a Virtual Environment
+
+**Windows:**
+
+```bash
+python -m venv venv
+venv\Scripts\activate
+```
+
+**Linux / macOS:**
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
+
+### 3. Install Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### 4. Run the Application
+
+```bash
+streamlit run app.py
+```
+
+The application will open in your browser.
+
+## 🖥️ Application Modules
+
+RepoInsight provides the following dashboard sections:
+
+| Module | Description |
+|---|---|
+| Analyse Repository | Analyze a public GitHub repository |
+| Ask Questions | Ask questions about repository analysis |
+| Execution Trace | Monitor agent execution steps |
+| Tools & History | Explore available tools and execution history |
+
+## 🧪 Testing
+
+Run the test suite using:
+
+```bash
+pytest -v
+```
+
+## 🎯 Example Use Case
+
+**Input:**
+
+```text
+https://github.com/psf/requests
+```
+
+**Expected Workflow:**
+
+- Collect repository files.
+- Identify programming languages.
+- Analyze Python code quality.
+- Perform heuristic security checks.
+- Generate an analysis report.
+- Allow users to ask questions about the repository.
+
+You can also test invalid repository URLs to observe error handling.
+
+## 🔐 Security & Limitations
+
+- Currently supports public GitHub repositories.
+- Does not execute the target repository's source code.
+- Security findings are heuristic indicators, not confirmed vulnerabilities.
+- Detailed code quality checks primarily focus on Python files.
+- Analysis results depend on repository accessibility and collected files.
+
+## 🌟 Future Enhancements
+
+- Support for private repositories using secure authentication.
+- More advanced vulnerability detection.
+- Support for additional programming languages.
+- Integration with LLM-powered code explanations.
+- Export reports in PDF format.
+- Improved analysis performance for large repositories.
+
+## 👩‍💻 Author
+
+GitHub: [@ByteVaish](https://github.com/ByteVaish)
+
+## 📄 License
+
+No license has currently been specified for this repository.
