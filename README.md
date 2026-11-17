@@ -49,7 +49,25 @@ flowchart TD
     N --> O[Streamlit Dashboard]
     O --> P[Repository Q&A]
 ```
-
+flowchart TD
+    A([User]) --> B[GitHub Repository URL]
+    B --> C[Planner Agent]
+    C --> D[Task Planning]
+    D --> E[Tool Selector]
+    E --> F[Tool Executor]
+    F --> G[Repository Analysis]
+    G --> H[Code Quality Analysis]
+    G --> I[Security Analysis]
+    G --> J[Language Detection]
+    H --> K[Reflection Agent]
+    I --> K
+    J --> K
+    K --> L{Results Complete?}
+    L -->|No| E
+    L -->|Yes| M[Final Analysis Report]
+    M --> N[Streamlit Dashboard]
+    N --> O[Ask Questions]
+    
 ## 🧠 Agent Workflow
 
 RepoInsight follows a multi-step execution workflow:
